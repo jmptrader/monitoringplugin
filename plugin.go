@@ -94,6 +94,7 @@ func (plugin *Plugin) Exit() {
 	plugin.exited = true
 
 	exitCode, message := plugin.result.GetStatus()
+	defer os.Exit(exitCode)
 	fmt.Print(message)
 
 	perfData := plugin.result.GetPerformanceData()
@@ -119,6 +120,4 @@ func (plugin *Plugin) Exit() {
 	}
 
 	fmt.Print(plugin.result.GetLongOutput())
-
-	os.Exit(exitCode)
 }
