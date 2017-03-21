@@ -13,8 +13,12 @@ func ExampleRange() {
 	}
 
 	fmt.Println(r.ToString())
+	fmt.Println(r.Check(50))
+	fmt.Println(r.Check(-100.5))
 	// Output:
 	// @-100:55.00045
+	// true
+	// false
 }
 
 func ExampleRangeInfinite() {
@@ -24,6 +28,10 @@ func ExampleRangeInfinite() {
 	}
 
 	fmt.Println(r.ToString())
+	fmt.Println(r.Check(-10000))
+	fmt.Println(r.Check(10))
 	// Output:
 	// ~:0
+	// false
+	// true
 }
