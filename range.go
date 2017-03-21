@@ -1,6 +1,7 @@
 package monitoringplugin
 
 import (
+	"bytes"
 	"fmt"
 	"math"
 	"regexp"
@@ -8,7 +9,7 @@ import (
 )
 
 var (
-	rangeRegex = regexp.MustCompile(`^(?P<invert>[@])?(?:(?P<start>(?:[\d]+|\~))(?::))?(?::)*(?P<end>[\d]+)?$`)
+	rangeRegex = regexp.MustCompile(`^(?P<invert>[@])?(?:(?P<start>(?:\-?[\d]+(?:\.\d+)?|\~))(?::))?(?::)*(?P<end>\-?[\d]+(?:\.\d+)?)?$`)
 )
 
 type Range struct {
@@ -16,13 +17,11 @@ type Range struct {
 	Invert bool
 	Start  float64
 	End    float64
-	option string
 }
 
 func NewRange(option string) (r Range, err error) {
 	r.Start = 0
 	r.End = math.Inf(1)
-	r.option = option
 
 	if option == "" {
 		r.Noop = true
@@ -44,6 +43,7 @@ func NewRange(option string) (r Range, err error) {
 			r.Start = math.Inf(-1)
 		} else {
 			if r.Start, err = strconv.ParseFloat(startOption, 64); err != nil {
+				err = fmt.Errorf("Can't parse start float: %s", err)
 				return
 			}
 		}
@@ -52,8 +52,14 @@ func NewRange(option string) (r Range, err error) {
 	endOption := parsedOption["end"]
 	if endOption != "" {
 		if r.End, err = strconv.ParseFloat(endOption, 64); err != nil {
+			err = fmt.Errorf("Can't parse end float: %s", err)
 			return
 		}
+	}
+
+	if r.End < r.Start {
+		err = fmt.Errorf("End(%f) is smaller than start(%f)", r.End, r.Start)
+		return
 	}
 
 	return
@@ -64,7 +70,7 @@ func (r Range) parseRange(option string) (result map[string]string, err error) {
 
 	match := rangeRegex.FindStringSubmatch(option)
 	if match == nil {
-		err = fmt.Errorf("Could not parse range: '%s'", option)
+		err = fmt.Errorf("Invalid range format: '%s'", option)
 		return
 	}
 
@@ -98,5 +104,25 @@ func (r Range) Check(value float64) (result bool) {
 }
 
 func (r Range) ToString() string {
-	return r.option
+	if r.Noop {
+		return ""
+	}
+
+	buffer := new(bytes.Buffer)
+	if r.Invert {
+		buffer.WriteByte('@')
+	}
+	if r.Start != 0.0 {
+		if math.IsInf(r.Start, -1) {
+			buffer.WriteString("~:")
+		} else {
+			buffer.WriteString(strconv.FormatFloat(r.Start, 'f', -1, 64))
+			buffer.WriteByte(':')
+		}
+	}
+	if !math.IsInf(r.End, 1) {
+		buffer.WriteString(strconv.FormatFloat(r.End, 'f', -1, 64))
+	}
+
+	return buffer.String()
 }
