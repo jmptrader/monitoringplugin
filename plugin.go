@@ -17,6 +17,7 @@ type PluginOpt struct {
 }
 
 type Plugin struct {
+	cliHandler          CliHandler
 	result              CheckResult
 	timeout             time.Duration
 	timeoutMessage      string
@@ -26,30 +27,30 @@ type Plugin struct {
 	floatPrecision      int
 }
 
-func NewPlugin(options PluginOpt) (plugin *Plugin) {
+type CliHandler interface {
+	HandleArguments(options PluginOpt) PluginOpt
+}
+
+func NewPlugin(cli CliHandler) (plugin *Plugin) {
 	plugin = new(Plugin)
 	plugin.exited = false
+	plugin.cliHandler = cli
+	return
+}
 
-	if options.Timeout > 0 {
-		plugin.timeout = options.Timeout
-	} else {
-		plugin.timeout = time.Duration(60) * time.Second
+func (plugin *Plugin) handleCli() {
+	defaultOptions := PluginOpt{
+		Timeout:         time.Duration(60) * time.Second,
+		TimeoutMessage:  "Plugin timed out",
+		FallbackMessage: "There is no result for this check!",
+		FloatPrecision:  2,
 	}
+	options := plugin.cliHandler.HandleArguments(defaultOptions)
 
-	if options.TimeoutMessage != "" {
-		plugin.timeoutMessage = options.TimeoutMessage
-	} else {
-		plugin.timeoutMessage = "Plugin timed out"
-	}
-
-	fallbackMessage := options.FallbackMessage
-	if fallbackMessage == "" {
-		fallbackMessage = "There is no result for this check!"
-	}
-	plugin.result = NewEasyResult(UNKNOWN, fallbackMessage)
-
+	plugin.timeout = options.Timeout
+	plugin.timeoutMessage = options.TimeoutMessage
+	plugin.result = NewEasyResult(UNKNOWN, options.FallbackMessage)
 	plugin.check = options.Check
-
 	plugin.performanceDataSpec = options.PerformanceDataSpec
 
 	if options.FloatPrecision < 0 {
@@ -59,11 +60,9 @@ func NewPlugin(options PluginOpt) (plugin *Plugin) {
 	} else {
 		plugin.floatPrecision = options.FloatPrecision
 	}
-
-	return
 }
 
-func (plugin *Plugin) Start() {
+func (plugin *Plugin) runCheck() {
 	resultChan := make(chan CheckResult, 1)
 
 	go func() {
@@ -78,6 +77,11 @@ func (plugin *Plugin) Start() {
 		plugin.result = NewEasyResult(UNKNOWN, plugin.timeoutMessage)
 		plugin.Exit()
 	}
+}
+
+func (plugin *Plugin) Start() {
+	plugin.handleCli()
+	plugin.runCheck()
 }
 
 func (plugin *Plugin) floatToStringOrEmpty(value float64) string {
