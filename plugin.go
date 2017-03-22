@@ -14,7 +14,6 @@ type PluginOpt struct {
 	FallbackMessage     string
 	Check               Check
 	PerformanceDataSpec []PerformanceDataSpec
-	FloatPrecision      int
 }
 
 type Plugin struct {
@@ -25,7 +24,6 @@ type Plugin struct {
 	check               Check
 	performanceDataSpec []PerformanceDataSpec
 	exited              bool
-	floatPrecision      int
 }
 
 type CliHandler interface {
@@ -44,7 +42,6 @@ func (plugin *Plugin) handleCli() {
 		Timeout:         time.Duration(60) * time.Second,
 		TimeoutMessage:  "Plugin timed out",
 		FallbackMessage: "There is no result for this check!",
-		FloatPrecision:  2,
 	}
 	options := plugin.cliHandler.HandleArguments(defaultOptions)
 
@@ -53,14 +50,6 @@ func (plugin *Plugin) handleCli() {
 	plugin.result = NewEasyResult(UNKNOWN, options.FallbackMessage)
 	plugin.check = options.Check
 	plugin.performanceDataSpec = options.PerformanceDataSpec
-
-	if options.FloatPrecision < 0 {
-		plugin.floatPrecision = 0
-	} else if options.FloatPrecision == 0 {
-		plugin.floatPrecision = 2
-	} else {
-		plugin.floatPrecision = options.FloatPrecision
-	}
 }
 
 func (plugin *Plugin) runCheck() {
@@ -89,7 +78,7 @@ func (plugin *Plugin) floatToStringOrEmpty(value float64) string {
 	if math.IsInf(value, 1) || math.IsInf(value, -1) {
 		return ""
 	}
-	return strconv.FormatFloat(value, 'f', plugin.floatPrecision, 64)
+	return strconv.FormatFloat(value, 'f', -1, 64)
 }
 
 // Exit is the function that outputs the result of this plugin.
