@@ -12,7 +12,7 @@ var (
 	rangeRegex = regexp.MustCompile(`^(?P<invert>[@])?(?:(?P<start>(?:\-?[\d]+(?:\.\d+)?|\~))(?::))?(?::)*(?P<end>\-?[\d]+(?:\.\d+)?)?$`)
 )
 
-// Range represents a range specified by nagios plugin guidelines
+// Range represents a range specified by nagios plugin guidelines.
 // See https://nagios-plugins.org/doc/guidelines.html#THRESHOLDFORMAT for further informations
 type Range struct {
 	Noop   bool
@@ -21,8 +21,7 @@ type Range struct {
 	End    float64
 }
 
-// NewRange from a text representation of a nagios range value
-// You may use this to parse range parameters for your plugin
+// NewRange is a constructor for Range that parses the text representation of a range.
 func NewRange(option string) (r Range, err error) {
 	r.Start = 0
 	r.End = math.Inf(1)
@@ -87,7 +86,7 @@ func (r Range) parseRange(option string) (result map[string]string, err error) {
 	return
 }
 
-// Check whether the value meets the requirements.
+// Check whether the value inside the range.
 func (r Range) Check(value float64) (result bool) {
 	result = false
 	if r.Noop {

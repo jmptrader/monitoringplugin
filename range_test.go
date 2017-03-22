@@ -22,7 +22,7 @@ func ExampleRange() {
 	// false
 }
 
-func ExampleRangeInfinite() {
+func ExampleRange_infinite() {
 	r, err := monitoringplugin.NewRange("~:0.0")
 	if err != nil {
 		fmt.Printf("Error can't create range: %s", err)
@@ -37,7 +37,7 @@ func ExampleRangeInfinite() {
 	// true
 }
 
-func ExampleRangeZero() {
+func ExampleRange_zero() {
 	r, err := monitoringplugin.NewRange("@100")
 	if err != nil {
 		fmt.Printf("Error can't create range: %s", err)
