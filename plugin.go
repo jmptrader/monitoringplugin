@@ -14,6 +14,7 @@ type PluginOpt struct {
 	FallbackMessage     string
 	Check               Check
 	PerformanceDataSpec []PerformanceDataSpec
+	DoNotExit           bool
 }
 
 type Plugin struct {
@@ -24,10 +25,11 @@ type Plugin struct {
 	check               Check
 	performanceDataSpec []PerformanceDataSpec
 	exited              bool
+	doNotExit           bool
 }
 
 type CliHandler interface {
-	HandleArguments(options PluginOpt) PluginOpt
+	HandleArguments(options PluginOpt) (PluginOpt, error)
 }
 
 func NewPlugin(cli CliHandler) (plugin *Plugin) {
@@ -43,13 +45,18 @@ func (plugin *Plugin) handleCli() {
 		TimeoutMessage:  "Plugin timed out",
 		FallbackMessage: "There is no result for this check!",
 	}
-	options := plugin.cliHandler.HandleArguments(defaultOptions)
+	options, err := plugin.cliHandler.HandleArguments(defaultOptions)
+	if err != nil {
+		plugin.result = NewEasyResult(UNKNOWN, fmt.Sprintf("Could not handle CLI: '%s'", err))
+		plugin.Exit()
+	}
 
 	plugin.timeout = options.Timeout
 	plugin.timeoutMessage = options.TimeoutMessage
 	plugin.result = NewEasyResult(UNKNOWN, options.FallbackMessage)
 	plugin.check = options.Check
 	plugin.performanceDataSpec = options.PerformanceDataSpec
+	plugin.doNotExit = options.DoNotExit
 }
 
 func (plugin *Plugin) runCheck() {
@@ -90,7 +97,10 @@ func (plugin *Plugin) Exit() {
 	plugin.exited = true
 
 	exitCode, message := plugin.result.GetStatus()
-	defer os.Exit(exitCode)
+	if !plugin.doNotExit {
+		defer os.Exit(exitCode)
+	}
+
 	fmt.Print(message)
 
 	perfData := plugin.result.GetPerformanceData()
