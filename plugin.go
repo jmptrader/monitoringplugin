@@ -2,6 +2,7 @@ package monitoringplugin
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"time"
@@ -85,7 +86,7 @@ func (plugin *Plugin) Start() {
 }
 
 func (plugin *Plugin) floatToStringOrEmpty(value float64) string {
-	if value == 0.0 {
+	if math.IsInf(value, 1) || math.IsInf(value, -1) {
 		return ""
 	}
 	return strconv.FormatFloat(value, 'f', plugin.floatPrecision, 64)
@@ -105,20 +106,7 @@ func (plugin *Plugin) Exit() {
 	if len(plugin.performanceDataSpec) > 0 {
 		fmt.Print(" |")
 		for _, spec := range plugin.performanceDataSpec {
-			var (
-				realValue string
-			)
-			value, hasValue := perfData[spec.Label]
-			if hasValue {
-				realValue = strconv.FormatFloat(value, 'f', plugin.floatPrecision, 64)
-			} else {
-				realValue = "U"
-			}
-
-			fmt.Printf(" '%s'=%s%s;%s;%s;%s;%s",
-				spec.Label, realValue, UnitToString(spec.UnitOfMeasurement),
-				spec.Warning.ToString(), spec.Critical.ToString(),
-				plugin.floatToStringOrEmpty(spec.Minimum), plugin.floatToStringOrEmpty(spec.Maximum))
+			fmt.Printf(" %s", spec.FormatPerfDataFromMap(perfData))
 		}
 		fmt.Print("\n")
 	}
