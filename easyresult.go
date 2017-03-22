@@ -1,5 +1,7 @@
 package monitoringplugin
 
+// EasyResult is an implementation of CheckResult.
+// Use this if you just need a simple check output.
 type EasyResult struct {
 	status  int
 	message string

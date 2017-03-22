@@ -22,6 +22,7 @@ const (
 	COUNTER    = 11
 )
 
+// PerformanceDataSpec is the specification of the performance data.
 type PerformanceDataSpec struct {
 	Label             string
 	UnitOfMeasurement int
@@ -60,6 +61,8 @@ func (perfDataSpec PerformanceDataSpec) unitString() string {
 	}
 }
 
+// FormatPerfDataFromMap calls FormatPerfData with the value from perfData.
+// If perfData doesn't have a value with the label of this specification, the value is 'U'.
 func (perfDataSpec PerformanceDataSpec) FormatPerfDataFromMap(perfData map[string]float64) string {
 	var perfValue string
 	value, hasValue := perfData[perfDataSpec.Label]
@@ -71,6 +74,7 @@ func (perfDataSpec PerformanceDataSpec) FormatPerfDataFromMap(perfData map[strin
 	return perfDataSpec.FormatPerfData(perfValue)
 }
 
+// FormatPerfData outputs the performance value (float or 'U') with the specified UOM and Limits.
 func (perfDataSpec PerformanceDataSpec) FormatPerfData(perfValue string) string {
 	var (
 		minValue  string

@@ -92,6 +92,8 @@ func (plugin *Plugin) floatToStringOrEmpty(value float64) string {
 	return strconv.FormatFloat(value, 'f', plugin.floatPrecision, 64)
 }
 
+// Exit is the function that outputs the result of this plugin.
+// You should call it with defer.
 func (plugin *Plugin) Exit() {
 	if plugin.exited {
 		return
