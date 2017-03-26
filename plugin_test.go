@@ -36,11 +36,12 @@ func (someCheck SomeCheck) HandleArguments(options monitoringplugin.PluginOpt) (
 
 	options.PerformanceDataSpec = []monitoringplugin.PerformanceDataSpec{
 		{
-			Label:    "foo",
-			Warning:  &warnRange,
-			Critical: &critRange,
-			Minimum:  0,
-			Maximum:  math.Inf(1),
+			Label:             "foo",
+			UnitOfMeasurement: monitoringplugin.NumberUnitSpecification,
+			Warning:           &warnRange,
+			Critical:          &critRange,
+			Minimum:           0,
+			Maximum:           math.Inf(1),
 		},
 	}
 

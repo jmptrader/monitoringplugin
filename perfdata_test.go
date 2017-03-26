@@ -3,6 +3,7 @@ package monitoringplugin_test
 import (
 	"fmt"
 	"math"
+	"time"
 
 	"github.com/jabdr/monitoringplugin"
 )
@@ -19,7 +20,7 @@ func ExamplePerformanceDataSpec() {
 	specs := []monitoringplugin.PerformanceDataSpec{
 		{
 			Label:             "example",
-			UnitOfMeasurement: monitoringplugin.SECONDS,
+			UnitOfMeasurement: monitoringplugin.DurationUnitSpecification,
 			Minimum:           0.0,
 			Maximum:           math.Inf(1),
 			Warning:           &warnRange,
@@ -27,20 +28,20 @@ func ExamplePerformanceDataSpec() {
 		},
 		{
 			Label:             "counter",
-			UnitOfMeasurement: monitoringplugin.COUNTER,
+			UnitOfMeasurement: monitoringplugin.CounterUnitSpecification,
 			Maximum:           math.Inf(1),
 		},
 		{
 			Label:             "novalue",
-			UnitOfMeasurement: monitoringplugin.MEGABYTES,
+			UnitOfMeasurement: monitoringplugin.BytesUnitSpecification,
 			Minimum:           math.Inf(-1),
 			Maximum:           math.Inf(1),
 		},
 	}
 
-	perfData := map[string]float64{
-		"example": 40.5,
-		"counter": 60,
+	perfData := map[string]monitoringplugin.Unit{
+		"example": monitoringplugin.DurationUnit(40 * time.Second),
+		"counter": monitoringplugin.CounterUnit(60),
 	}
 
 	for _, spec := range specs {
@@ -48,7 +49,7 @@ func ExamplePerformanceDataSpec() {
 	}
 
 	// Output:
-	// 'example'=40.5s;80;90;0;
+	// 'example'=40s;80;90;0;
 	// 'counter'=60c;;;0;
-	// 'novalue'=UMB;;;;
+	// 'novalue'=UB;;;;
 }

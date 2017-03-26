@@ -6,68 +6,23 @@ import (
 	"strconv"
 )
 
-// Nagios Performance Data Units Of Measurement
-const (
-	NUMBER     = 0
-	SECONDS    = 1
-	PERCENTAGE = 2
-	BYTES      = 3
-	KILOBYTES  = 4
-	MEGABYTES  = 5
-	GIGABYTES  = 6
-	TERABYTES  = 7
-	PETABYTES  = 8
-	EXABYTES   = 9
-	ZETTABYTES = 10
-	COUNTER    = 11
-)
-
 // PerformanceDataSpec is the specification of the performance data.
 type PerformanceDataSpec struct {
 	Label             string
-	UnitOfMeasurement int
+	UnitOfMeasurement UnitSpecification
 	Warning           *Range
 	Critical          *Range
 	Minimum           float64
 	Maximum           float64
 }
 
-func (perfDataSpec PerformanceDataSpec) unitString() string {
-	switch perfDataSpec.UnitOfMeasurement {
-	case SECONDS:
-		return "s"
-	case PERCENTAGE:
-		return "%"
-	case BYTES:
-		return "B"
-	case KILOBYTES:
-		return "KB"
-	case MEGABYTES:
-		return "MB"
-	case GIGABYTES:
-		return "GB"
-	case TERABYTES:
-		return "TB"
-	case PETABYTES:
-		return "PB"
-	case EXABYTES:
-		return "EB"
-	case ZETTABYTES:
-		return "ZB"
-	case COUNTER:
-		return "c"
-	default:
-		return ""
-	}
-}
-
 // FormatPerfDataFromMap calls FormatPerfData with the value from perfData.
 // If perfData doesn't have a value with the label of this specification, the value is 'U'.
-func (perfDataSpec PerformanceDataSpec) FormatPerfDataFromMap(perfData map[string]float64) string {
+func (perfDataSpec PerformanceDataSpec) FormatPerfDataFromMap(perfData map[string]Unit) string {
 	var perfValue string
 	value, hasValue := perfData[perfDataSpec.Label]
 	if hasValue {
-		perfValue = strconv.FormatFloat(value, 'f', -1, 64)
+		perfValue = strconv.FormatFloat(value.Value(), 'f', -1, 64)
 	} else {
 		perfValue = "U"
 	}
@@ -104,7 +59,7 @@ func (perfDataSpec PerformanceDataSpec) FormatPerfData(perfValue string) string 
 	}
 
 	return fmt.Sprintf("'%s'=%s%s;%s;%s;%s;%s",
-		perfDataSpec.Label, perfValue, perfDataSpec.unitString(),
+		perfDataSpec.Label, perfValue, perfDataSpec.UnitOfMeasurement.String(),
 		warnValue, critValue,
 		minValue, maxValue)
 }

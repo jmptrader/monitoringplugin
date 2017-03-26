@@ -12,7 +12,7 @@ type DefaultCheckResult struct {
 	message        string
 	defaultMessage string
 	longOutput     string
-	perfData       map[string]float64
+	perfData       map[string]Unit
 }
 
 func NewDefaultCheckResult(options *DefaultCheckResultOpts) (checkResult *DefaultCheckResult) {
@@ -25,7 +25,7 @@ func NewDefaultCheckResult(options *DefaultCheckResultOpts) (checkResult *Defaul
 	}
 	checkResult.currentStatus = options.DefaultStatus
 	checkResult.defaultMessage = options.DefaultMessage
-	checkResult.perfData = make(map[string]float64)
+	checkResult.perfData = make(map[string]Unit)
 	return
 }
 
@@ -42,7 +42,7 @@ func (checkResult *DefaultCheckResult) GetLongOutput() string {
 	return checkResult.longOutput
 }
 
-func (checkResult *DefaultCheckResult) GetPerformanceData() map[string]float64 {
+func (checkResult *DefaultCheckResult) GetPerformanceData() map[string]Unit {
 	return checkResult.perfData
 }
 
@@ -75,6 +75,6 @@ func (checkResult *DefaultCheckResult) SetLongOutput(message string) {
 	checkResult.longOutput = message
 }
 
-func (checkResult *DefaultCheckResult) SetPerformanceData(label string, value float64) {
+func (checkResult *DefaultCheckResult) SetPerformanceData(label string, value Unit) {
 	checkResult.perfData[label] = value
 }

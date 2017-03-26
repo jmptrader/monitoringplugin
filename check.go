@@ -12,7 +12,7 @@ const (
 type CheckResult interface {
 	GetStatus() (exitCode int, message string)
 	GetLongOutput() (output string)
-	GetPerformanceData() map[string]float64
+	GetPerformanceData() map[string]Unit
 }
 
 // Check is an interface for the check you want to run.

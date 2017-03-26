@@ -5,20 +5,27 @@ import (
 	"time"
 )
 
-type Unit interface {
+type UnitSpecification interface {
 	String() string
+}
+
+type Unit interface {
+	HumanReadable() string
 	Value() float64
-	UnitString() string
+}
+
+type SimpleUnitSpecification string
+
+func (unitSpec SimpleUnitSpecification) String() string {
+	return string(unitSpec)
 }
 
 type DurationUnit time.Duration
 
-func (unit DurationUnit) String() string {
-	return time.Duration(unit).String()
-}
+const DurationUnitSpecification = SimpleUnitSpecification("s")
 
-func (unit DurationUnit) UnitString() string {
-	return "s"
+func (unit DurationUnit) HumanReadable() string {
+	return time.Duration(unit).String()
 }
 
 func (unit DurationUnit) Value() float64 {
@@ -27,12 +34,10 @@ func (unit DurationUnit) Value() float64 {
 
 type CounterUnit uint64
 
-func (unit CounterUnit) String() string {
-	return fmt.Sprintf("%dc", uint64(unit))
-}
+const CounterUnitSpecification = SimpleUnitSpecification("c")
 
-func (unit CounterUnit) UnitString() string {
-	return "c"
+func (unit CounterUnit) HumanReadable() string {
+	return fmt.Sprintf("%dc", uint64(unit))
 }
 
 func (unit CounterUnit) Value() float64 {
@@ -41,12 +46,10 @@ func (unit CounterUnit) Value() float64 {
 
 type NumberUnit float64
 
-func (unit NumberUnit) String() string {
-	return fmt.Sprintf("%.2f", unit.Value())
-}
+const NumberUnitSpecification = SimpleUnitSpecification("")
 
-func (unit NumberUnit) UnitString() string {
-	return ""
+func (unit NumberUnit) HumanReadable() string {
+	return fmt.Sprintf("%.2f", unit.Value())
 }
 
 func (unit NumberUnit) Value() float64 {
@@ -58,12 +61,10 @@ type PercentageUnit struct {
 	Quantitiy float64
 }
 
-func (unit PercentageUnit) String() string {
-	return fmt.Sprintf("%.2f%%", unit.Value())
-}
+const PercentageUnitSpecification = SimpleUnitSpecification("%")
 
-func (unit PercentageUnit) UnitString() string {
-	return "%"
+func (unit PercentageUnit) HumanReadable() string {
+	return fmt.Sprintf("%.2f%%", unit.Value())
 }
 
 func (unit PercentageUnit) Value() float64 {
@@ -72,7 +73,9 @@ func (unit PercentageUnit) Value() float64 {
 
 type BytesUnit int64
 
-func (unit BytesUnit) String() string {
+const BytesUnitSpecification = SimpleUnitSpecification("B")
+
+func (unit BytesUnit) HumanReadable() string {
 	result := ""
 	kibi := float64(unit) / 1024
 	if kibi > 1 {
@@ -96,10 +99,6 @@ func (unit BytesUnit) String() string {
 		result = fmt.Sprintf("%dB", unit)
 	}
 	return result
-}
-
-func (unit BytesUnit) UnitString() string {
-	return "B"
 }
 
 func (unit BytesUnit) Value() float64 {

@@ -23,7 +23,7 @@ func (easyResult *EasyResult) GetLongOutput() (output string) {
 	return
 }
 
-func (easyResult *EasyResult) GetPerformanceData() (perfData map[string]float64) {
-	perfData = make(map[string]float64)
+func (easyResult *EasyResult) GetPerformanceData() (perfData map[string]Unit) {
+	perfData = make(map[string]Unit)
 	return
 }
