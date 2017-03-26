@@ -51,9 +51,22 @@ func (someCheck SomeCheck) HandleArguments(options monitoringplugin.PluginOpt) (
 }
 
 func (someCheck SomeCheck) Run() monitoringplugin.CheckResult {
-	// Do some foo
+	checkResult := monitoringplugin.NewDefaultCheckResult(nil)
 
-	return monitoringplugin.NewEasyResult(monitoringplugin.OK, "Everything is fine")
+	// Do something
+
+	magicNumber := 100
+	checkResult.SetPerformanceData("foo", monitoringplugin.NumberUnit(magicNumber))
+
+	if someCheck.critical.Check(float64(magicNumber)) {
+		checkResult.SetResult(monitoringplugin.CRTIICAL, "Hello World!")
+	} else if someCheck.warning.Check(float64(magicNumber)) {
+		checkResult.SetResult(monitoringplugin.WARNING, "Hello World!")
+	} else {
+		checkResult.SetResult(monitoringplugin.OK, "Hello World!")
+	}
+
+	return checkResult
 }
 
 func Example() {
@@ -62,5 +75,5 @@ func Example() {
 	defer plugin.Exit()
 	plugin.Start()
 	// Output:
-	// Everything is fine | 'foo'=U;;;0;
+	// Hello World! | 'foo'=100;;;0;
 }
