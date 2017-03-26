@@ -8,13 +8,22 @@ import (
 	"time"
 )
 
+// PluginOpt sets the default values for the Plugin.
+// Is is used by the CliHandler implementation.
 type PluginOpt struct {
-	Timeout             time.Duration
-	TimeoutMessage      string
-	FallbackMessage     string
-	Check               Check
+	// Set the timeout for the plugin.
+	Timeout time.Duration
+	// Set the message for plugin when the timeout has been hit.
+	TimeoutMessage string
+	// If the check crashes this message will be shown.
+	FallbackMessage string
+	// The actual check that should be run.
+	Check Check
+	// The specification for the performance data output (not the values)
 	PerformanceDataSpec []PerformanceDataSpec
-	DoNotExit           bool
+	// Do not exit the plugin, when plugin.Exit will be called.
+	// This is for testing purposes.
+	DoNotExit bool
 }
 
 type Plugin struct {
@@ -28,10 +37,13 @@ type Plugin struct {
 	doNotExit           bool
 }
 
+// CliHandler is an interface for a type that should parse cli parameter
+// and prepare the plugin.
 type CliHandler interface {
 	HandleArguments(options PluginOpt) (PluginOpt, error)
 }
 
+// NewPlugin is a constructor for Plugin
 func NewPlugin(cli CliHandler) (plugin *Plugin) {
 	plugin = new(Plugin)
 	plugin.exited = false
@@ -76,6 +88,8 @@ func (plugin *Plugin) runCheck() {
 	}
 }
 
+// Start will start the CliHandler and run the check.
+// You should call defer plugin.Exit() before!
 func (plugin *Plugin) Start() {
 	plugin.handleCli()
 	plugin.runCheck()
