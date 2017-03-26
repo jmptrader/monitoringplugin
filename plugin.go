@@ -47,13 +47,13 @@ func (plugin *Plugin) handleCli() {
 	}
 	options, err := plugin.cliHandler.HandleArguments(defaultOptions)
 	if err != nil {
-		plugin.result = NewEasyResult(UNKNOWN, fmt.Sprintf("Could not handle CLI: '%s'", err))
+		plugin.result = &EasyResult{UNKNOWN, fmt.Sprintf("Could not handle CLI: '%s'", err)}
 		plugin.Exit()
 	}
 
 	plugin.timeout = options.Timeout
 	plugin.timeoutMessage = options.TimeoutMessage
-	plugin.result = NewEasyResult(UNKNOWN, options.FallbackMessage)
+	plugin.result = &EasyResult{UNKNOWN, options.FallbackMessage}
 	plugin.check = options.Check
 	plugin.performanceDataSpec = options.PerformanceDataSpec
 	plugin.doNotExit = options.DoNotExit
@@ -71,7 +71,7 @@ func (plugin *Plugin) runCheck() {
 		plugin.result = result
 		plugin.Exit()
 	case <-time.After(plugin.timeout):
-		plugin.result = NewEasyResult(UNKNOWN, plugin.timeoutMessage)
+		plugin.result = &EasyResult{UNKNOWN, plugin.timeoutMessage}
 		plugin.Exit()
 	}
 }

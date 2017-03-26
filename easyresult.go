@@ -3,21 +3,13 @@ package monitoringplugin
 // EasyResult is an implementation of CheckResult.
 // Use this if you just need a simple check output.
 type EasyResult struct {
-	status  int
-	message string
-}
-
-// NewEasyResult is a constructor for EasyResult.
-func NewEasyResult(status int, message string) (easyResult *EasyResult) {
-	easyResult = new(EasyResult)
-	easyResult.status = status
-	easyResult.message = message
-	return
+	Status  int
+	Message string
 }
 
 // GetStatus implements CheckResult.GetStatus
 func (easyResult *EasyResult) GetStatus() (int, string) {
-	return easyResult.status, easyResult.message
+	return easyResult.Status, easyResult.Message
 }
 
 // GetLongOutput implements CheckResult.GetLongOutput
