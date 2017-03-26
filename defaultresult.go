@@ -29,6 +29,7 @@ func NewDefaultCheckResult(options *DefaultCheckResultOpts) (checkResult *Defaul
 	return
 }
 
+// GetStatus implements CheckResult.GetStatus
 func (checkResult *DefaultCheckResult) GetStatus() (exitCode int, message string) {
 	exitCode = checkResult.currentStatus
 	message = checkResult.message
@@ -38,10 +39,12 @@ func (checkResult *DefaultCheckResult) GetStatus() (exitCode int, message string
 	return
 }
 
+// GetLongOutput implements CheckResult.GetLongOutput
 func (checkResult *DefaultCheckResult) GetLongOutput() string {
 	return checkResult.longOutput
 }
 
+// GetPerformanceData implements CheckResult.GetPerformanceData
 func (checkResult *DefaultCheckResult) GetPerformanceData() map[string]Unit {
 	return checkResult.perfData
 }
