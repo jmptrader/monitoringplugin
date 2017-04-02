@@ -4,7 +4,7 @@ package monitoringplugin
 const (
 	OK       = 0
 	WARNING  = 1
-	CRTIICAL = 2
+	CRITICAL = 2
 	UNKNOWN  = 3
 )
 

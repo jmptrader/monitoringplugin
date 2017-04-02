@@ -59,7 +59,7 @@ func (someCheck SomeCheck) Run() monitoringplugin.CheckResult {
 	checkResult.SetPerformanceData("foo", monitoringplugin.NumberUnit(magicNumber))
 
 	if someCheck.critical.Check(float64(magicNumber)) {
-		checkResult.SetResult(monitoringplugin.CRTIICAL, "Hello World!")
+		checkResult.SetResult(monitoringplugin.CRITICAL, "Hello World!")
 	} else if someCheck.warning.Check(float64(magicNumber)) {
 		checkResult.SetResult(monitoringplugin.WARNING, "Hello World!")
 	} else {
