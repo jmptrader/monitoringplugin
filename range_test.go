@@ -53,3 +53,20 @@ func ExampleRange_zero() {
 	// true
 	// false
 }
+
+func ExampleRange_empty() {
+	r, err := monitoringplugin.NewRange("")
+	if err != nil {
+		fmt.Printf("Error can't create range: %s", err)
+	}
+
+	fmt.Println(r.ToString())
+	fmt.Println(r.Check(200))
+	fmt.Println(r.Check(10))
+	fmt.Println(r.Check(-1))
+	// Output:
+	//
+	// false
+	// false
+	// false
+}
