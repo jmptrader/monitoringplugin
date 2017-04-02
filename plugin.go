@@ -123,8 +123,8 @@ func (plugin *Plugin) Exit() {
 		for _, spec := range plugin.performanceDataSpec {
 			fmt.Printf(" %s", spec.FormatPerfDataFromMap(perfData))
 		}
-		fmt.Print("\n")
 	}
+	fmt.Print("\n")
 
 	fmt.Print(plugin.result.GetLongOutput())
 }
