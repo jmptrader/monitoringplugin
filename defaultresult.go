@@ -61,7 +61,11 @@ func (checkResult *DefaultCheckResult) AddResult(status int, message string) {
 		checkResult.currentStatus = status
 	}
 	if message != "" {
-		checkResult.message = fmt.Sprintf("%s; %s", checkResult.message, message)
+		if checkResult.message == "" {
+			checkResult.message = message
+		} else {
+			checkResult.message = fmt.Sprintf("%s; %s", checkResult.message, message)
+		}
 	}
 }
 
