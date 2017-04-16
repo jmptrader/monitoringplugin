@@ -6,10 +6,6 @@ import (
 	"time"
 )
 
-func init() {
-	testingMode = true
-}
-
 type SomeCheck struct {
 	warning  Range
 	critical Range
