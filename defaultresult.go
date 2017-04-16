@@ -20,7 +20,7 @@ func NewDefaultCheckResult(options *DefaultCheckResultOpts) (checkResult *Defaul
 	if options == nil {
 		options = &DefaultCheckResultOpts{
 			DefaultStatus:  3,
-			DefaultMessage: "No result provided!",
+			DefaultMessage: "Internal error: No result from check",
 		}
 	}
 	checkResult.currentStatus = options.DefaultStatus
