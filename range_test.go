@@ -1,13 +1,11 @@
-package monitoringplugin_test
+package monitoringplugin
 
 import (
 	"fmt"
-
-	"github.com/jabdr/monitoringplugin"
 )
 
 func ExampleRange() {
-	r, err := monitoringplugin.NewRange("@-100:55.00045")
+	r, err := NewRange("@-100:55.00045")
 	if err != nil {
 		fmt.Printf("Error can't create range: %s", err)
 		return
@@ -23,7 +21,7 @@ func ExampleRange() {
 }
 
 func ExampleRange_infinite() {
-	r, err := monitoringplugin.NewRange("~:0.0")
+	r, err := NewRange("~:0.0")
 	if err != nil {
 		fmt.Printf("Error can't create range: %s", err)
 	}
@@ -38,7 +36,7 @@ func ExampleRange_infinite() {
 }
 
 func ExampleRange_zero() {
-	r, err := monitoringplugin.NewRange("@100")
+	r, err := NewRange("@100")
 	if err != nil {
 		fmt.Printf("Error can't create range: %s", err)
 	}
@@ -55,7 +53,7 @@ func ExampleRange_zero() {
 }
 
 func ExampleRange_empty() {
-	r, err := monitoringplugin.NewRange("")
+	r, err := NewRange("")
 	if err != nil {
 		fmt.Printf("Error can't create range: %s", err)
 	}

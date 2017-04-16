@@ -1,31 +1,33 @@
-package monitoringplugin_test
+package monitoringplugin
 
 import (
 	"flag"
 	"math"
 	"time"
-
-	"github.com/jabdr/monitoringplugin"
 )
 
-type SomeCheck struct {
-	warning  monitoringplugin.Range
-	critical monitoringplugin.Range
+func init() {
+	testingMode = true
 }
 
-func (someCheck SomeCheck) HandleArguments(options monitoringplugin.PluginOpt) (monitoringplugin.PluginOpt, error) {
+type SomeCheck struct {
+	warning  Range
+	critical Range
+}
+
+func (someCheck SomeCheck) HandleArguments(options PluginOpt) (PluginOpt, error) {
 	warning := flag.String("w", "", "Warning range")
 	critical := flag.String("c", "", "Critical range")
 	timeout := flag.Int64("t", 60, "Plugin timeout in seconds")
 	flag.Parse()
 
-	warnRange, err := monitoringplugin.NewRange(*warning)
+	warnRange, err := NewRange(*warning)
 	if err != nil {
 		return options, err
 	}
 	someCheck.warning = warnRange
 
-	critRange, err := monitoringplugin.NewRange(*critical)
+	critRange, err := NewRange(*critical)
 	if err != nil {
 		return options, err
 	}
@@ -34,10 +36,10 @@ func (someCheck SomeCheck) HandleArguments(options monitoringplugin.PluginOpt) (
 	options.Timeout = time.Duration(*timeout) * time.Second
 	options.Check = someCheck
 
-	options.PerformanceDataSpec = []monitoringplugin.PerformanceDataSpec{
+	options.PerformanceDataSpec = []PerformanceDataSpec{
 		{
 			Label:             "foo",
-			UnitOfMeasurement: monitoringplugin.NumberUnitSpecification,
+			UnitOfMeasurement: NumberUnitSpecification,
 			Warning:           &warnRange,
 			Critical:          &critRange,
 			Minimum:           0,
@@ -45,25 +47,23 @@ func (someCheck SomeCheck) HandleArguments(options monitoringplugin.PluginOpt) (
 		},
 	}
 
-	options.DoNotExit = true // for testing
-
 	return options, nil
 }
 
-func (someCheck SomeCheck) Run() monitoringplugin.CheckResult {
-	checkResult := monitoringplugin.NewDefaultCheckResult(nil)
+func (someCheck SomeCheck) Run() CheckResult {
+	checkResult := NewDefaultCheckResult(nil)
 
 	// Do something
 
 	magicNumber := 100
-	checkResult.SetPerformanceData("foo", monitoringplugin.NumberUnit(magicNumber))
+	checkResult.SetPerformanceData("foo", NumberUnit(magicNumber))
 
 	if someCheck.critical.Check(float64(magicNumber)) {
-		checkResult.SetResult(monitoringplugin.CRITICAL, "Hello World!")
+		checkResult.SetResult(CRITICAL, "Hello World!")
 	} else if someCheck.warning.Check(float64(magicNumber)) {
-		checkResult.SetResult(monitoringplugin.WARNING, "Hello World!")
+		checkResult.SetResult(WARNING, "Hello World!")
 	} else {
-		checkResult.SetResult(monitoringplugin.OK, "Hello World!")
+		checkResult.SetResult(OK, "Hello World!")
 	}
 
 	return checkResult
@@ -71,7 +71,7 @@ func (someCheck SomeCheck) Run() monitoringplugin.CheckResult {
 
 func Example() {
 	check := new(SomeCheck)
-	plugin := monitoringplugin.NewPlugin(check)
+	plugin := NewPlugin(check)
 	defer plugin.Exit()
 	plugin.Start()
 	// Output:

@@ -1,19 +1,17 @@
-package monitoringplugin_test
+package monitoringplugin
 
 import (
 	"fmt"
 	"time"
-
-	"github.com/jabdr/monitoringplugin"
 )
 
 func ExampleUnit() {
-	units := []monitoringplugin.Unit{
-		monitoringplugin.DurationUnit(640.0 * time.Second),
-		monitoringplugin.DurationUnit((5*86400 + 6*3600 + 10) * time.Second),
-		monitoringplugin.CounterUnit(130),
-		monitoringplugin.PercentageUnit{Base: 100.0, Quantitiy: 64.0},
-		monitoringplugin.BytesUnit(5*1024*1024*1024 + 10*1024*1024),
+	units := []Unit{
+		DurationUnit(640.0 * time.Second),
+		DurationUnit((5*86400 + 6*3600 + 10) * time.Second),
+		CounterUnit(130),
+		PercentageUnit{Base: 100.0, Quantitiy: 64.0},
+		BytesUnit(5*1024*1024*1024 + 10*1024*1024),
 	}
 
 	for index, unit := range units {

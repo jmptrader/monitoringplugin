@@ -1,26 +1,24 @@
-package monitoringplugin_test
+package monitoringplugin
 
 import (
 	"fmt"
 	"math"
 	"time"
-
-	"github.com/jabdr/monitoringplugin"
 )
 
 func ExamplePerformanceDataSpec() {
-	warnRange, err := monitoringplugin.NewRange("80")
+	warnRange, err := NewRange("80")
 	if err != nil {
 		fmt.Println(err)
 	}
-	critRange, err := monitoringplugin.NewRange("90")
+	critRange, err := NewRange("90")
 	if err != nil {
 		fmt.Println(err)
 	}
-	specs := []monitoringplugin.PerformanceDataSpec{
+	specs := []PerformanceDataSpec{
 		{
 			Label:             "example",
-			UnitOfMeasurement: monitoringplugin.DurationUnitSpecification,
+			UnitOfMeasurement: DurationUnitSpecification,
 			Minimum:           0.0,
 			Maximum:           math.Inf(1),
 			Warning:           &warnRange,
@@ -28,20 +26,20 @@ func ExamplePerformanceDataSpec() {
 		},
 		{
 			Label:             "counter",
-			UnitOfMeasurement: monitoringplugin.CounterUnitSpecification,
+			UnitOfMeasurement: CounterUnitSpecification,
 			Maximum:           math.Inf(1),
 		},
 		{
 			Label:             "novalue",
-			UnitOfMeasurement: monitoringplugin.BytesUnitSpecification,
+			UnitOfMeasurement: BytesUnitSpecification,
 			Minimum:           math.Inf(-1),
 			Maximum:           math.Inf(1),
 		},
 	}
 
-	perfData := map[string]monitoringplugin.Unit{
-		"example": monitoringplugin.DurationUnit(40 * time.Second),
-		"counter": monitoringplugin.CounterUnit(60),
+	perfData := map[string]Unit{
+		"example": DurationUnit(40 * time.Second),
+		"counter": CounterUnit(60),
 	}
 
 	for _, spec := range specs {

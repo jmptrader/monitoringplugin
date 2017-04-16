@@ -8,6 +8,10 @@ import (
 	"time"
 )
 
+var (
+	testingMode = false
+)
+
 // PluginOpt sets the default values for the Plugin.
 // Is is used by the CliHandler implementation.
 type PluginOpt struct {
@@ -111,7 +115,7 @@ func (plugin *Plugin) Exit() {
 	plugin.exited = true
 
 	exitCode, message := plugin.result.GetStatus()
-	if !plugin.doNotExit {
+	if !plugin.doNotExit && !testingMode {
 		defer os.Exit(exitCode)
 	}
 
