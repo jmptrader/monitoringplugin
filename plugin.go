@@ -73,6 +73,16 @@ func (plugin *Plugin) handleCli() {
 	plugin.check = options.Check
 	plugin.performanceDataSpec = options.PerformanceDataSpec
 	plugin.doNotExit = options.DoNotExit
+
+	if plugin.check == nil {
+		check, ok := plugin.cliHandler.(Check)
+		if ok {
+			plugin.check = check
+		} else {
+			plugin.result = &EasyResult{UNKNOWN, "Internal error, no check provided by CLI handler"}
+			plugin.Exit()
+		}
+	}
 }
 
 func (plugin *Plugin) runCheck() {
