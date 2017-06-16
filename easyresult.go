@@ -23,3 +23,8 @@ func (easyResult *EasyResult) GetPerformanceData() (perfData map[string]Unit) {
 	perfData = make(map[string]Unit)
 	return
 }
+
+func (easyResult *EasyResult) GetDynamicPerformanceDataSpec() (spec []PerformanceDataSpec) {
+	spec = make([]PerformanceDataSpec, 0)
+	return
+}

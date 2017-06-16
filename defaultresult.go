@@ -8,11 +8,12 @@ type DefaultCheckResultOpts struct {
 }
 
 type DefaultCheckResult struct {
-	currentStatus  int
-	message        string
-	defaultMessage string
-	longOutput     string
-	perfData       map[string]Unit
+	currentStatus       int
+	message             string
+	defaultMessage      string
+	longOutput          string
+	perfData            map[string]Unit
+	dynamicPerfDataSpec []PerformanceDataSpec
 }
 
 func NewDefaultCheckResult(options *DefaultCheckResultOpts) (checkResult *DefaultCheckResult) {
@@ -26,6 +27,7 @@ func NewDefaultCheckResult(options *DefaultCheckResultOpts) (checkResult *Defaul
 	checkResult.currentStatus = options.DefaultStatus
 	checkResult.defaultMessage = options.DefaultMessage
 	checkResult.perfData = make(map[string]Unit)
+	checkResult.dynamicPerfDataSpec = make([]PerformanceDataSpec, 0)
 	return
 }
 
@@ -47,6 +49,10 @@ func (checkResult *DefaultCheckResult) GetLongOutput() string {
 // GetPerformanceData implements CheckResult.GetPerformanceData
 func (checkResult *DefaultCheckResult) GetPerformanceData() map[string]Unit {
 	return checkResult.perfData
+}
+
+func (CheckResult *DefaultCheckResult) GetDynamicPerformanceDataSpec() []PerformanceDataSpec {
+	return CheckResult.dynamicPerfDataSpec
 }
 
 func (checkResult *DefaultCheckResult) compareStatus(newStatus int) bool {
@@ -84,4 +90,8 @@ func (checkResult *DefaultCheckResult) SetLongOutput(message string) {
 
 func (checkResult *DefaultCheckResult) SetPerformanceData(label string, value Unit) {
 	checkResult.perfData[label] = value
+}
+
+func (checkResult *DefaultCheckResult) SetPerformanceDataSpec(spec PerformanceDataSpec) {
+	checkResult.dynamicPerfDataSpec = append(checkResult.dynamicPerfDataSpec, spec)
 }
