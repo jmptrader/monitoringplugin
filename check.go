@@ -16,6 +16,8 @@ type CheckResult interface {
 	GetLongOutput() (output string)
 	// GetPerformanceData returns a perfdata name to perfdata value map
 	GetPerformanceData() map[string]Unit
+	// GetDynamicPerformanceDataSpec returns a list of performance data specifications added during run
+	GetDynamicPerformanceDataSpec() []PerformanceDataSpec
 }
 
 // Check is an interface for the check you want to run.

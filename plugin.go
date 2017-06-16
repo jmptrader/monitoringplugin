@@ -130,11 +130,12 @@ func (plugin *Plugin) Exit() {
 	}
 
 	fmt.Print(message)
+	perfDataSpecs := append(plugin.performanceDataSpec, plugin.result.GetDynamicPerformanceDataSpec()...)
 
 	perfData := plugin.result.GetPerformanceData()
-	if len(plugin.performanceDataSpec) > 0 {
+	if len(perfDataSpecs) > 0 {
 		fmt.Print(" |")
-		for _, spec := range plugin.performanceDataSpec {
+		for _, spec := range perfDataSpecs {
 			fmt.Printf(" %s", spec.FormatPerfDataFromMap(perfData))
 		}
 	}
