@@ -68,7 +68,7 @@ func NewRange(option string) (r Range, err error) {
 	return
 }
 
-func (r Range) parseRange(option string) (result map[string]string, err error) {
+func (r *Range) parseRange(option string) (result map[string]string, err error) {
 	result = make(map[string]string)
 
 	match := rangeRegex.FindStringSubmatch(option)
@@ -87,7 +87,7 @@ func (r Range) parseRange(option string) (result map[string]string, err error) {
 }
 
 // Check whether the value inside the range.
-func (r Range) Check(value float64) (result bool) {
+func (r *Range) Check(value float64) (result bool) {
 	result = false
 	if r.Noop {
 		return
@@ -108,7 +108,7 @@ func (r Range) Check(value float64) (result bool) {
 }
 
 // ToString returns a perfdata compatible text representation of the range
-func (r Range) ToString() string {
+func (r *Range) ToString() string {
 	if r.Noop {
 		return ""
 	}
@@ -130,4 +130,15 @@ func (r Range) ToString() string {
 	}
 
 	return buffer.String()
+}
+
+// String implements flag.Value
+func (r *Range) String() string {
+	return r.ToString()
+}
+
+// Set implements flag.Value
+func (r *Range) Set(value string) (err error) {
+	*r, err = NewRange(value)
+	return
 }

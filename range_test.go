@@ -1,7 +1,10 @@
 package monitoringplugin
 
 import (
+	"flag"
 	"fmt"
+	"io/ioutil"
+	"testing"
 )
 
 func ExampleRange() {
@@ -67,4 +70,30 @@ func ExampleRange_empty() {
 	// false
 	// false
 	// false
+}
+
+func ExampleRange_flag() {
+	flagSet := flag.NewFlagSet("test", flag.ContinueOnError)
+	r := new(Range)
+	flagSet.Var(r, "warning", "This is a warning flag")
+	err := flagSet.Parse([]string{"-warning", "10:20"})
+	if err != nil {
+		fmt.Printf("Could not parse arguments: %s", err)
+		return
+	}
+	fmt.Println(r.String())
+	// Output:
+	//
+	// 10:20
+}
+
+func TestInvalidRangeFlag(t *testing.T) {
+	flagSet := flag.NewFlagSet("test_invalid", flag.ContinueOnError)
+	flagSet.SetOutput(ioutil.Discard)
+	r := new(Range)
+	flagSet.Var(r, "warning", "This is a warning flag")
+	err := flagSet.Parse([]string{"-warning", "~~10:20"})
+	if err == nil {
+		t.Error("An invalid range was given, but flag package did not show any errors")
+	}
 }
