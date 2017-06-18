@@ -2,6 +2,7 @@ package monitoringplugin
 
 import (
 	"fmt"
+	"io"
 	"math"
 	"os"
 	"strconv"
@@ -28,6 +29,8 @@ type PluginOpt struct {
 	// Do not exit the plugin, when plugin.Exit will be called.
 	// This is for testing purposes.
 	DoNotExit bool
+	// Specify an alternative target for the output of the result
+	OutputWriter io.Writer
 }
 
 type Plugin struct {
@@ -39,6 +42,7 @@ type Plugin struct {
 	performanceDataSpec []PerformanceDataSpec
 	exited              bool
 	doNotExit           bool
+	outputWriter        io.Writer
 }
 
 // CliHandler is an interface for a type that should parse cli parameter
@@ -60,6 +64,7 @@ func (plugin *Plugin) handleCli() {
 		Timeout:         time.Duration(60) * time.Second,
 		TimeoutMessage:  "Plugin timed out",
 		FallbackMessage: "There is no result for this check!",
+		OutputWriter:    os.Stdout,
 	}
 	options, err := plugin.cliHandler.HandleArguments(defaultOptions)
 	if err != nil {
@@ -73,6 +78,7 @@ func (plugin *Plugin) handleCli() {
 	plugin.check = options.Check
 	plugin.performanceDataSpec = options.PerformanceDataSpec
 	plugin.doNotExit = options.DoNotExit
+	plugin.outputWriter = options.OutputWriter
 
 	if plugin.check == nil {
 		check, ok := plugin.cliHandler.(Check)
@@ -129,17 +135,17 @@ func (plugin *Plugin) Exit() {
 		defer os.Exit(exitCode)
 	}
 
-	fmt.Print(message)
+	fmt.Fprint(plugin.outputWriter, message)
 	perfDataSpecs := append(plugin.performanceDataSpec, plugin.result.GetDynamicPerformanceDataSpec()...)
 
 	perfData := plugin.result.GetPerformanceData()
 	if len(perfDataSpecs) > 0 {
-		fmt.Print(" |")
+		fmt.Fprint(plugin.outputWriter, " |")
 		for _, spec := range perfDataSpecs {
-			fmt.Printf(" %s", spec.FormatPerfDataFromMap(perfData))
+			fmt.Fprintf(plugin.outputWriter, " %s", spec.FormatPerfDataFromMap(perfData))
 		}
 	}
-	fmt.Print("\n")
+	fmt.Fprint(plugin.outputWriter, "\n")
 
-	fmt.Print(plugin.result.GetLongOutput())
+	fmt.Fprint(plugin.outputWriter, plugin.result.GetLongOutput())
 }
